@@ -9,7 +9,7 @@ tags:
   - security
 subordinate: false
 provides:
-  web-ui:
+  auth-api:
     interface: http
 requires:
   db:

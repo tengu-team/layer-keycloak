@@ -122,3 +122,7 @@ def start_keycloak():
     set_flag('keycloak.running')
     status_set('active', 'Keycloak is running [admin user: {}:{}]'.format(db.get('admin_user'), db.get('admin_password')))
 
+@when('auth-api.available', 'keycloak.running')
+def configure_api(api):
+    api.configure(port='8080')
+
