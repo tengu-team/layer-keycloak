@@ -66,6 +66,8 @@ def no_database():
         log('keycloak service is running, will stop service first.')
         service_stop('keycloak')
     close_port('8080')
+    log('Resetting all flags, except keycloak.installed')
+    clear_flag('keycloak.running')
     clear_flag('keycloak.configured')
     clear_flag('keycloak.dbconnected')
     status_set('blocked', 'Please connect a PostgreSQL database.')
