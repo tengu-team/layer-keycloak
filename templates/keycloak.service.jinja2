@@ -1,0 +1,12 @@
+[Unit]
+Description=Keycloack service, juju service name: {{name}}
+After=syslog.target
+After=network.target
+After=systemd-user-sessions.service
+
+[Service]
+Type=simple
+ExecStart={{script}}
+
+[Install]
+WantedBy=multi-user.target

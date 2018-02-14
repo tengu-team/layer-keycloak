@@ -1,0 +1,6 @@
+options:
+  apt:
+    packages:
+      - openjdk-8-jdk
+includes: ['layer:basic', 'layer:apt', 'interface:pgsql', 'interface:http']
+repo: git@github.com:tengu-team/layer-keycloak.git
