@@ -23,7 +23,7 @@ from charms.reactive.relations import endpoint_from_flag
 from charms.reactive.helpers import data_changed
 from charmhelpers.core import templating, unitdata
 from charmhelpers.core.host import service_start, service_stop, service_running
-from charmhelpers.core.hookenv import status_set, log, config, open_port, close_port, charm_dir, service_name, unit_private_ip
+from charmhelpers.core.hookenv import status_set, log, config, application_version_set, open_port, close_port, charm_dir, service_name, unit_private_ip
 from charmhelpers.fetch.archiveurl import ArchiveUrlFetchHandler
 from charms.reactive.flags import get_flags
 
@@ -57,6 +57,7 @@ def install_keycloak():
     check_call(['systemctl', 'enable', 'keycloak.service'])
     log('Keycloak service enabled.')
 
+    application_version_set(KEYCLOAK_VERSION)
     set_flag('keycloak.installed')
 
 @when('keycloak.installed')
