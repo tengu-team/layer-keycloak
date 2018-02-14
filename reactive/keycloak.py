@@ -21,7 +21,7 @@ from subprocess import check_call, run, CalledProcessError
 from charms.reactive import set_flag, clear_flag, when_not, when, when_any
 from charms.reactive.relations import endpoint_from_flag
 from charms.reactive.helpers import data_changed
-from charmhelpers.core import templating
+from charmhelpers.core import templating, unitdata
 from charmhelpers.core.host import service_start, service_stop, service_running
 from charmhelpers.core.hookenv import status_set, log, config, open_port, close_port, charm_dir, service_name, unit_private_ip
 from charmhelpers.fetch.archiveurl import ArchiveUrlFetchHandler
@@ -102,15 +102,22 @@ def configure_db(pgsql):
 @when('keycloak.installed', 'keycloak.dbconnected', 'keycloak.configured')
 @when_not('keycloak.running')
 def start_keycloak():
-    admin_user = 'admin'
-    admin_password = b64encode(os.urandom(18)).decode('utf-8')
+    db = unitdata.kv()
+    if not db.get('admin_user'):
+        admin_user = 'admin'
+        admin_password = b64encode(os.urandom(18)).decode('utf-8')
+        db.set('admin_user', admin_user)
+        db.set('admin_password', admin_password)
 
-    check_call(['{}/bin/add-user-keycloak.sh'.format(KEYCLOAK_HOME), '-u', admin_user, '-p', admin_password])
-    log('Added Keycloak admin user: {}'.format(admin_user))
+        check_call(['{}/bin/add-user-keycloak.sh'.format(KEYCLOAK_HOME), '-u', admin_user, '-p', admin_password])
+        log('Added Keycloak admin user: {}'.format(admin_user))
+    else:
+        log('Use previously set admin user.')
 
     service_start('keycloak')
     open_port('8080')
     log('Keycloak service started.')
 
     set_flag('keycloak.running')
-    status_set('active', 'Keycloak is running [admin user: {}:{}]'.format(admin_user, admin_password))
+    status_set('active', 'Keycloak is running [admin user: {}:{}]'.format(db.get('admin_user'), db.get('admin_password')))
+
