@@ -17,20 +17,18 @@
 
 from base64 import b64encode
 import os
-from subprocess import check_call, run, CalledProcessError
-from charms.reactive import set_flag, clear_flag, when_not, when, when_any
-from charms.reactive.relations import endpoint_from_flag
-from charms.reactive.helpers import data_changed
+from subprocess import check_call
+from charms.reactive import set_flag, clear_flag, when_not, when
 from charmhelpers.core import templating, unitdata
 from charmhelpers.core.host import service_start, service_stop, service_running
 from charmhelpers.core.hookenv import status_set, log, config, application_version_set, open_port, close_port, charm_dir, service_name, unit_private_ip
 from charmhelpers.fetch.archiveurl import ArchiveUrlFetchHandler
-from charms.reactive.flags import get_flags
 
-KEYCLOAK_VERSION = '3.4.3.Final'
+KEYCLOAK_VERSION = config()['version']
 KEYCLOAK_DOWNLOAD = 'https://downloads.jboss.org/keycloak/{}/keycloak-{}.tar.gz'.format(KEYCLOAK_VERSION, KEYCLOAK_VERSION)
 KEYCLOAK_BASE_DIR = '/opt'
 KEYCLOAK_HOME = '{}/keycloak-{}'.format(KEYCLOAK_BASE_DIR, KEYCLOAK_VERSION)
+
 
 @when('apt.installed.openjdk-8-jdk')
 @when_not('keycloak.installed')
@@ -60,6 +58,7 @@ def install_keycloak():
     application_version_set(KEYCLOAK_VERSION)
     set_flag('keycloak.installed')
 
+
 @when('keycloak.installed')
 @when_not('db.connected')
 def no_database():
@@ -73,6 +72,7 @@ def no_database():
     clear_flag('keycloak.dbconnected')
     status_set('blocked', 'Please connect a PostgreSQL database.')
 
+
 @when('db.connected')
 @when_not('keycloak.dbconnected')
 def set_db(pgsql):
@@ -81,6 +81,7 @@ def set_db(pgsql):
     pgsql.set_database(db_name)
     log('Database {} is requested on PostgreSQL'.format(db_name))
     set_flag('keycloak.dbconnected')
+
 
 @when('db.master.available', 'keycloak.installed', 'keycloak.dbconnected')
 @when_not('keycloak.configured')
@@ -120,9 +121,10 @@ def start_keycloak():
     log('Keycloak service started.')
 
     set_flag('keycloak.running')
-    status_set('active', 'Keycloak is running [admin user: {}:{}]'.format(db.get('admin_user'), db.get('admin_password')))
+    status_set('active', 'Keycloak is running [admin user: {}:{}]'.format(
+        db.get('admin_user'), db.get('admin_password')))
+
 
 @when('auth-api.available', 'keycloak.running')
 def configure_api(api):
     api.configure(port='8080')
-

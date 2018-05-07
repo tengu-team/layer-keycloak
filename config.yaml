@@ -1,0 +1,10 @@
+options:
+  version:
+    type: string
+    default: "4.0.0.Beta2"
+    description: |
+      This is the Keycloak version the charm will use to install Keycloak. Using
+      this version string the download url is composed:
+      https://downloads.jboss.org/keycloak/{version}/keycloak-{version}.tar.gz.
+      Once the version is set and Keycloak is installed, changeing this config
+      parameter won't have any effect.
