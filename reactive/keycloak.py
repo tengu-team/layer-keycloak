@@ -42,7 +42,7 @@ def install_keycloak():
     module_dir = '{}/modules/system/layers/keycloak/org/postgresql/main'.format(KEYCLOAK_HOME)
     os.makedirs(module_dir, exist_ok=True)
     os.symlink('{}/files/module.xml'.format(charm_dir()), '{}/module.xml'.format(module_dir))
-    os.symlink('{}/files/postgresql-42.2.1.jar'.format(charm_dir()), '{}/postgresql-42.2.1.jar'.format(module_dir))
+    os.symlink('{}/files/postgresql-42.2.5.jar'.format(charm_dir()), '{}/postgresql-42.2.5.jar'.format(module_dir))
     log('PostgreSQL module copied.')
 
     standalone_context = {

@@ -16,3 +16,4 @@ requires:
     interface: pgsql
 series:
   - xenial
+  - bionic
